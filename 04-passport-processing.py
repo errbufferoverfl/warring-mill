@@ -1,8 +1,9 @@
 import re
 from pathlib import Path
+from typing import Optional
 
 
-def open_puzzle(file_name: str):
+def open_puzzle(file_name: str) -> Optional[list[str]]:
     input_path = Path("input/")
 
     if file_name:
@@ -14,7 +15,7 @@ def open_puzzle(file_name: str):
         return None
 
 
-def standardised(lines: list) -> list[list[str]]:
+def standardise_puzzle(lines: list) -> list[list[str]]:
     standardised_puzzle = list()
     batch = list()
 
@@ -29,33 +30,32 @@ def standardised(lines: list) -> list[list[str]]:
     return standardised_puzzle
 
 
-def dictionaryify(standardised_input: list[list[str]]) -> list[dict]:
+def convert_to_dictionary(standardised_input: list[list[str]]) -> list[dict]:
     actual_puzzle = list()
+
     for row in standardised_input:
-        dictonaried_input = dict()
+        dictonaryed_input = dict()
         for value in row:
             key, pair = value.split(':')
-            dictonaried_input[key] = pair
-        actual_puzzle.append(dictonaried_input)
+            dictonaryed_input[key] = pair
+        actual_puzzle.append(dictonaryed_input)
     return actual_puzzle
 
 
-def validate_height(height: str):
+def validate_height(height: str) -> bool:
     if height.endswith("cm"):
         if 150 <= int(height.replace("cm", "")) <= 193:
             return True
-        else:
-            return False
     elif height.endswith("in"):
-        if 59 < int(height.replace("in", "")) < 76:
+        if 59 <= int(height.replace("in", "")) <= 76:
             return True
-        else:
-            return False
+    else:
+        return False
 
 
-def validate_year(year: int, min: int, max: int):
+def validate_year(year: int, min_year: int, max_year: int) -> bool:
     length = len(year) == 4
-    between = min <= int(year) <= max
+    between = min_year <= int(year) <= max_year
 
     if length and between:
         return True
@@ -72,18 +72,15 @@ def validate_hair_colour(colour: str):
         return False
 
 
-def validate_eye_colour(colour: str):
-    valid_colours = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
-
-    if colour in valid_colours:
+def validate_eye_colour(colour: str) -> bool:
+    if colour in ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]:
         return True
     else:
         return False
 
 
-def validate_passport_id(passport_id: str):
+def validate_passport_id(passport_id: str) -> bool:
     if len(passport_id) == 9:
-
         return True
     else:
         return False
@@ -103,17 +100,13 @@ def validate_all_the_things(passport: dict):
 
 
 def papers_please(passport_dicts: list):
-    required_keys = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
-    optional_keys = ['cid']
-    valid_passports = 1
+    valid_passports = 0
 
     for passport in passport_dicts:
-        if len(passport) == 8:
-            if validate_all_the_things(passport):
-                valid_passports = valid_passports + 1
-        elif len(passport) == 7 and passport.get('cid', None) is None:
-            if validate_all_the_things(passport):
-                valid_passports = valid_passports + 1
+        if len(passport) == 8 and validate_all_the_things(passport):
+            valid_passports = valid_passports + 1
+        elif len(passport) == 7 and passport.get('cid', None) is None and validate_all_the_things(passport):
+            valid_passports = valid_passports + 1
 
     print(valid_passports)
 
@@ -121,6 +114,6 @@ def papers_please(passport_dicts: list):
 if __name__ == '__main__':
     puzzle = open_puzzle("04-passport-processing.txt")
     puzzle = [line.strip() for line in puzzle]
-    puzzle = standardised(puzzle)
-    puzzle = dictionaryify(puzzle)
+    puzzle = standardise_puzzle(puzzle)
+    puzzle = convert_to_dictionary(puzzle)
     papers_please(puzzle)
