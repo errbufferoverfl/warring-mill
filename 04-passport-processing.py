@@ -114,6 +114,7 @@ def papers_please(passport_dicts: list):
 if __name__ == '__main__':
     puzzle = open_puzzle("04-passport-processing.txt")
     puzzle = [line.strip() for line in puzzle]
+    puzzle.append('')
     puzzle = standardise_puzzle(puzzle)
     puzzle = convert_to_dictionary(puzzle)
     papers_please(puzzle)
