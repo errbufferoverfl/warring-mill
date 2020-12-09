@@ -1,6 +1,7 @@
 from collections import Counter
 from pathlib import Path
-from typing import Optional, Union
+
+from typing import Union
 
 
 def open_puzzle(file_name: str):
